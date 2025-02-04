@@ -1,0 +1,133 @@
+#include <iostream>
+using namespace std;
+// Definimos el tamaño máximo de jugadores
+const int MAX_JUGADORES = 100;
+
+// Estructura para almacenar la información del jugador
+struct Jugador {
+    char nombre[50];
+    char apellido[50];
+    int puntaje;
+};
+// Generador lineal congruencial para números aleatorios
+unsigned long semilla = 12345; // Semilla inicial para el generador
+int generarAleatorio() {
+    semilla = (1103515245 * semilla + 12345) % 2147483648; // Fórmula estándar LCG
+    return semilla % 6 + 1; // Número entre 1 y 6
+}
+
+int lanzarDados() {
+    return generarAleatorio() + generarAleatorio();
+}
+
+int juego() {
+    int suma = lanzarDados();
+    cout << "Tiraste: " << suma << endl;
+
+    if (suma == 7 || suma == 11) {
+        cout << "¡Ganaste en el primer lanzamiento!" << endl;
+        return 1; // Gana
+    } else if (suma == 2 || suma == 3 || suma == 12) {
+        cout << "¡Perdiste en el primer lanzamiento!" << endl;
+        return 0; // Pierde
+    } else {
+        int punto = suma;
+        cout << "El punto es: " << punto << endl;
+        while (true) {
+            suma = lanzarDados();
+            cout << "Tiraste: " << suma << endl;
+            if (suma == punto) {
+                cout << "¡Ganaste al hacer tu punto!" << endl;
+                return 1; // Gana
+            } else if (suma == 7) {
+                cout << "¡Perdiste al tirar un 7!" << endl;
+                return 0; // Pierde
+            }
+        }
+    }
+}
+void mostrarMenu() {
+    cout << "---- Menu Principal ----" << endl;
+    cout << "1. Ingresar Nombre y Apellido" << endl;
+    cout << "2. Jugar" << endl;
+    cout << "3. Mostrar Puntaje" << endl;
+    cout << "4. Salir" << endl;
+    cout << "5. Creditos" << endl;
+    cout << "Selecciona una opción: ";
+}
+
+int main() {
+    Jugador jugadores[MAX_JUGADORES]; // Arreglo para almacenar los jugadores
+    int cantidadJugadores = 0; // Número de jugadores registrados
+    int opcion = 0;
+
+    while (true) {
+        mostrarMenu();
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1: {
+                // Ingresar nombre y apellido
+                if (cantidadJugadores < MAX_JUGADORES) {
+                    cout << "Introduce tu nombre: ";
+                    cin.ignore();
+                    cin.getline(jugadores[cantidadJugadores].nombre, 50);
+                    cout << "Introduce tu apellido: ";
+                    cin.getline(jugadores[cantidadJugadores].apellido, 50);
+                    jugadores[cantidadJugadores].puntaje = 0; // Inicializar puntaje
+                    cout << "Hola " << jugadores[cantidadJugadores].nombre << " "
+                         << jugadores[cantidadJugadores].apellido
+                         << ", elije la opción de jugar." << endl;
+                    cantidadJugadores++;
+                } else {
+                    cout << "No se pueden registrar más jugadores." << endl;
+                }
+                break;
+            }
+            case 2: {
+                // Jugar
+                if (cantidadJugadores == 0) {
+                    cout << "Por favor, ingresa el nombre y apellido primero en la opción 1." << endl;
+                    break;
+                }
+                cout << "Comenzando el juego 🎲🎲" << endl;
+                if (juego() == 1) {
+                    jugadores[cantidadJugadores - 1].puntaje++; // Incrementar el puntaje del último jugador
+                    cout << "Tu puntaje actual es: " << jugadores[cantidadJugadores - 1].puntaje << endl;
+                }
+                break;
+            }
+            case 3: {
+                // Mostrar puntaje
+                if (cantidadJugadores == 0) {
+                    cout << "No hay jugadores registrados." << endl;
+                } else {
+                    cout << "Puntajes de los jugadores:\n";
+                    for (int i = 0; i < cantidadJugadores; i++) {
+                        cout << jugadores[i].nombre << " " << jugadores[i].apellido
+                             << ": " << jugadores[i].puntaje << " puntos\n";
+                    }
+                }
+                break;
+            }
+            case 4: {
+                // Salir
+                cout << "Saliendo del programa 👍" << endl;
+                return 0;
+            }
+            case 5: {
+                // Créditos
+                cout << "Desarrollado por: Kevin Calapi y Anthony Casa" << endl;
+                cout << "Gracias por jugar!" << endl;
+                break;
+            }
+            default: {
+                cout << "Por favor, selecciona una opción entre 1 y 5." << endl;
+                break;
+            }
+        }
+        cout << endl;
+    }
+
+    return 0;
+}
